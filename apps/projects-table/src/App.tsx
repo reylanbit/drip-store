@@ -148,17 +148,47 @@ export default function App() {
   }
 
   const handleLogin = () => {
-    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID
     const scope = 'repo,read:org'
-    const redirect = window.location.origin
-    const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=${encodeURIComponent(scope)}`
-    window.open(url, '_blank')
-    alert('Para uso local, cole seu token GitHub (PAT) temporário abaixo. Em produção, usaremos OAuth Device Flow sem backend.')
-    const t = prompt('Cole um GitHub token (scope: repo, read:org):')
-    if (t) {
-      localStorage.setItem('gh_token', t)
-      setToken(t)
-    }
+    fetch('/api/auth/device/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scope })
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error('device start failed')
+        const data = await r.json()
+        const { user_code, verification_uri, device_code, interval = 5 } = data
+        alert(`Código: ${user_code}\nAbra: ${verification_uri}\nDepois de autorizar, voltaremos automaticamente.`)
+        window.open(verification_uri, '_blank')
+        const iv = setInterval(async () => {
+          const resp = await fetch('/api/auth/device/poll', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ device_code })
+          })
+          if (!resp.ok) return
+          const pollData = await resp.json()
+          if (pollData.error === 'authorization_pending') {
+            return
+          }
+          if (pollData.error === 'slow_down') {
+            return
+          }
+          if (pollData.access_token) {
+            clearInterval(iv)
+            localStorage.setItem('gh_token', pollData.access_token)
+            setToken(pollData.access_token)
+          }
+        }, Math.max(3, interval) * 1000)
+      })
+      .catch(async () => {
+        alert('Falha no Device Flow. Como fallback, cole um GitHub token (PAT) com escopos repo, read:org.')
+        const t = prompt('Cole um GitHub token (scope: repo, read:org):')
+        if (t) {
+          localStorage.setItem('gh_token', t)
+          setToken(t)
+        }
+      })
   }
 
   const handleLogout = () => {

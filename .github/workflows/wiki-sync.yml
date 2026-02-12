@@ -1,0 +1,76 @@
+name: Sync Docs to GitHub Wiki
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/wiki/**'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if Wiki is enabled
+        id: check_wiki
+        run: |
+          set -e
+          resp=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }})
+          enabled=$(python - <<'PY'\nimport sys, json\nprint(json.load(sys.stdin).get('has_wiki', False))\nPY <<< "$resp")
+          if [ "$enabled" = "True" ] || [ "$enabled" = "true" ]; then
+            echo "wiki_enabled=true" >> $GITHUB_OUTPUT
+            echo "GitHub Wiki is enabled."
+          else
+            echo "wiki_enabled=false" >> $GITHUB_OUTPUT
+            echo "GitHub Wiki is disabled."
+          fi
+
+      - name: Prepare Wiki directory
+        run: |
+          set -e
+          rm -rf wiki
+          mkdir -p wiki
+
+      - name: Clone Wiki repository
+        if: steps.check_wiki.outputs.wiki_enabled == 'true'
+        run: |
+          set -e
+          WIKI_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git"
+          git clone "$WIKI_URL" wiki
+
+      - name: Initialize local repo when Wiki disabled
+        if: steps.check_wiki.outputs.wiki_enabled != 'true'
+        run: |
+          set -e
+          echo "Wiki desativada no repositório. Habilite em Settings → Wiki."
+          cd wiki
+          git init
+          git checkout -b main
+          cd ..
+
+      - name: Sync docs into wiki directory
+        run: |
+          set -e
+          rsync -av --delete docs/wiki/ wiki/
+
+      - name: Commit and push to Wiki
+        run: |
+          cd wiki
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add .
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(wiki): sync from docs/wiki on ${{ github.sha }}"
+            if git config remote.origin.url >/dev/null 2>&1; then
+              BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+              git push -u origin "$BRANCH" || { echo "Falha ao enviar para Wiki. Verifique se a Wiki está habilitada."; exit 0; }
+            else
+              echo "Wiki desativada; commit local realizado sem push."
+            fi
+          else
+            echo "No changes to sync."
+          fi

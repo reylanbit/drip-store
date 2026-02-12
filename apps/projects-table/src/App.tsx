@@ -223,7 +223,7 @@ export default function App() {
           placeholder="Nome da view"
         />
         <button className="px-3 py-2 bg-slate-800 text-white rounded" onClick={saveView}>Salvar view</button>
-        <select className="border rounded px-2 py-2" onChange={e => e.target.value && loadView(e.target.value)}>
+        <select className="border rounded px-2 py-2" title="Carregar view" aria-label="Carregar view" onChange={e => e.target.value && loadView(e.target.value)}>
           <option value="">Carregar view...</option>
           {views.map(v => (
             <option key={v.name} value={v.name}>{v.name}</option>

@@ -19,7 +19,11 @@ const getIcon = (label) => {
 const CategoryGrid = () => (
   <div className="flex justify-center gap-[24px] my-[32px] flex-wrap">
     {CATEGORIES.map((cat, idx) => (
-      <Link key={idx} to="/categorias" className="flex flex-col items-center gap-[12px] no-underline">
+      <Link
+        key={idx}
+        to="/categorias"
+        className="flex flex-col items-center gap-[12px] no-underline text-[#474747] visited:text-[#474747]"
+      >
         <div className="w-[84px] h-[84px] min-[641px]:w-[104px] min-[641px]:h-[104px] rounded-full bg-neutral-white flex items-center justify-center shadow-[0px_4px_10px_rgba(0,0,0,0.1)] cursor-pointer transition text-neutral-darkGray2 hover:text-primary hover:-translate-y-[5px]">
           {getIcon(cat.label)}
         </div>

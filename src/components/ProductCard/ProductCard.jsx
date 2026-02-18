@@ -19,7 +19,7 @@ export default function ProductCard({ id, image, name, price, priceDiscount, cat
   return (
     <Link
       to={id ? `/produto/${id}` : '/produto'}
-      className="w-full max-w-[292px] flex flex-col gap-[12px] cursor-pointer group sm:max-w-full no-underline"
+      className="w-full max-w-[292px] flex flex-col gap-[12px] cursor-pointer group sm:max-w-full no-underline text-[#474747] visited:text-[#474747] [&_*]:text-[#474747] [&_*]:visited:text-[#474747]"
     >
       <div className="w-full h-[321px] bg-neutral-lightGray3 rounded-[4px] flex items-center justify-center overflow-hidden relative shadow-[0_4px_10px_rgba(0,0,0,0.03)] sm:h-[180px]">
         <img

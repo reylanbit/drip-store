@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../Layouts/Layout";
 import Button from "../../components/Button/Button";
 import { useCart } from "../../hooks/useCart";
 
 const OrdersPage = () => {
   const { cart, updateQuantity, removeFromCart, clearCart, getCartTotal } = useCart();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -17,8 +19,6 @@ const OrdersPage = () => {
     payment: "cartao"
   });
   const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState(false);
-
   const total = getCartTotal();
 
   const formatBRL = (value) =>
@@ -59,8 +59,27 @@ const OrdersPage = () => {
     const nextErrors = validate();
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
+    const paymentLabels = {
+      cartao: "Cartão de Crédito",
+      boleto: "Boleto",
+      pix: "Pix"
+    };
+    const orderItems = cart.map((item) => {
+      const unitPrice = item.priceDiscount ?? item.price;
+      return {
+        ...item,
+        unitPrice,
+        subtotal: unitPrice * item.quantity
+      };
+    });
+    const order = {
+      customer: { ...formData },
+      paymentLabel: paymentLabels[formData.payment] ?? formData.payment,
+      items: orderItems,
+      total
+    };
+    navigate("/compra-confirmada", { state: order });
     clearCart();
-    setSuccess(true);
     setFormData({
       fullName: "",
       email: "",
@@ -171,11 +190,6 @@ const OrdersPage = () => {
 
               <form className="bg-white rounded-[8px] p-[24px]" onSubmit={handleConfirm}>
                 <h2 className="text-[20px] font-bold text-neutral-darkGray2 mb-[16px]">Checkout</h2>
-                {success && (
-                  <div className="bg-[#E8FFF3] border border-[#B5EAD7] text-[#2F855A] text-[14px] font-bold rounded-[8px] p-[12px] mb-[12px]">
-                    Compra confirmada com sucesso!
-                  </div>
-                )}
                 <div className="flex flex-col gap-[12px]">
                   <div>
                     <label className="text-[14px] font-bold text-neutral-darkGray2">Nome completo</label>

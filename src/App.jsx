@@ -4,6 +4,8 @@ import ProductListingPage from "./pages/ProductListingPage/ProductListingPage";
 import ProductViewPage from "./pages/ProductViewPage/ProductViewPage";
 import CategoriesPage from "./pages/CategoriesPage/CategoriesPage";
 import OrdersPage from "./pages/OrdersPage/OrdersPage";
+import ThankYouPage from "./pages/ThankYouPage/ThankYouPage";
+import ComponentsPage from "./pages/ComponentsPage/ComponentsPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegisterPage from "./pages/Auth/RegisterPage";
 
@@ -18,6 +20,8 @@ function App() {
         <Route path="/produto/:id" element={<ProductViewPage />} />
         <Route path="/categorias" element={<CategoriesPage />} />
         <Route path="/pedidos" element={<OrdersPage />} />
+        <Route path="/compra-confirmada" element={<ThankYouPage />} />
+        <Route path="/componentes" element={<ComponentsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>

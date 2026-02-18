@@ -54,13 +54,14 @@ const Header = ({ variant = "default" }) => {
                   <span className="text-[14px] text-neutral-darkGray2">
                     Olá, <span className="font-bold">{currentUser.name.split(" ")[0]}</span>
                   </span>
-                  <button
-                    type="button"
+                  <Button
+                    size="lg"
+                    variant="primary"
+                    className="px-[40px] text-[16px]"
                     onClick={logout}
-                    className="h-[36px] px-[12px] rounded-[8px] border border-neutral-lightGray2 text-[13px] font-bold text-neutral-darkGray2 hover:border-primary hover:text-primary transition"
                   >
                     Sair
-                  </button>
+                  </Button>
                 </>
               ) : (
                 <AuthLinks />

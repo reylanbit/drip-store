@@ -57,7 +57,7 @@ const HomePage = () => {
                 <h2 className="text-[20px] min-[641px]:text-[24px] text-[#474747] font-bold">Produtos em alta</h2>
                 <Link
                   to="/produtos"
-                  className="text-primary no-underline font-normal text-[16px] min-[641px]:text-[18px] flex items-center gap-[8px] hover:underline"
+                  className="text-primary visited:text-primary no-underline font-normal text-[16px] min-[641px]:text-[18px] flex items-center gap-[8px] hover:underline"
                 >
                   Ver todos <span>&rarr;</span>
                 </Link>

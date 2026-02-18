@@ -25,9 +25,9 @@ export default function ProductOptions({
               key={size}
               type="button"
               onClick={() => onSizeChange?.(size)}
-              className={`w-[46px] h-[46px] rounded-[4px] border text-[14px] font-bold transition ${
+              className={`w-[46px] h-[46px] rounded-[6px] border text-[14px] font-bold transition ${
                 currentSize === size
-                  ? 'border-primary text-primary'
+                  ? 'border-primary text-primary bg-primary/10 ring-2 ring-primary/30 ring-offset-2 ring-offset-neutral-white'
                   : 'border-neutral-lightGray2 text-neutral-darkGray2 hover:border-primary'
               }`}
             >
@@ -45,8 +45,10 @@ export default function ProductOptions({
               key={color}
               type="button"
               onClick={() => onColorChange?.(color)}
-              className={`w-[44px] h-[44px] rounded-full border ${
-                currentColor === color ? 'border-neutral-darkGray2' : 'border-transparent'
+              className={`w-[44px] h-[44px] rounded-full border transition ${
+                currentColor === color
+                  ? 'border-primary ring-2 ring-primary/40 ring-offset-2 ring-offset-neutral-white'
+                  : 'border-transparent hover:border-primary'
               }`}
               style={{ backgroundColor: color }}
               aria-label={`Cor ${color}`}
@@ -62,8 +64,10 @@ export default function ProductOptions({
               key={color}
               type="button"
               onClick={() => onSampleColorChange?.(color)}
-              className={`w-[44px] h-[44px] rounded-[8px] border ${
-                currentSampleColor === color ? 'border-neutral-darkGray2' : 'border-neutral-lightGray2'
+              className={`w-[44px] h-[44px] rounded-[8px] border transition ${
+                currentSampleColor === color
+                  ? 'border-primary ring-2 ring-primary/40 ring-offset-2 ring-offset-neutral-white'
+                  : 'border-neutral-lightGray2 hover:border-primary'
               }`}
               style={{ backgroundColor: color }}
               aria-label={`Outra cor ${color}`}

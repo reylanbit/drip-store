@@ -139,7 +139,7 @@ const CategoriesPage = () => {
                   href={item.link}
                   data-card
                   role="listitem"
-                  className="bg-white rounded-[16px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] no-underline text-neutral-darkGray2 transition duration-300 ease-in-out opacity-0 translate-y-3 hover:scale-[1.03] hover:shadow-[0_14px_40px_rgba(0,0,0,0.14)]"
+                  className="bg-white rounded-[16px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] no-underline text-[#474747] visited:text-[#474747] transition duration-300 ease-in-out opacity-0 translate-y-3 hover:scale-[1.03] hover:shadow-[0_14px_40px_rgba(0,0,0,0.14)]"
                 >
                   <img
                     src={item.imageUrl}
@@ -151,7 +151,7 @@ const CategoriesPage = () => {
                     className="w-full h-[180px] object-cover"
                   />
                   <div className="p-[16px] flex flex-col gap-[8px]">
-                    <h3 className="text-[18px] font-bold text-neutral-darkGray2">{item.name}</h3>
+                    <h3 className="text-[18px] font-bold text-[#474747]">{item.name}</h3>
                     <p className="text-[14px] text-neutral-darkGray3 leading-[21px]">
                       {item.description}
                     </p>

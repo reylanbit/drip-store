@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Button from "../Button/Button";
 
 const AuthLinks = ({ className = "" }) => {
   return (
@@ -9,11 +10,14 @@ const AuthLinks = ({ className = "" }) => {
       >
         Cadastre-se
       </Link>
-      <Link
-        to="/login"
-        className="min-h-[44px] px-[18px] bg-[#C92071] text-white text-[14px] font-bold rounded-[6px] flex items-center justify-center no-underline"
-      >
-        Entrar
+      <Link to="/login" className="no-underline">
+        <Button
+          size="lg"
+          variant="primary"
+          className="px-[40px] text-[16px]"
+        >
+          Entrar
+        </Button>
       </Link>
     </div>
   );

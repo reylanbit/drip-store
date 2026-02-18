@@ -26,14 +26,14 @@ const Header = ({ variant = "default" }) => {
   }
 
   return (
-    <header className={`w-full relative z-[60] ${isOpen ? "bg-green-300" : "bg-white"}`}>
+    <header className="w-full bg-white relative z-[60]">
       <div className="max-w-[1440px] mx-auto px-[16px] min-[641px]:px-[24px] min-[1025px]:px-[100px] pt-[20px] min-[641px]:pt-[32px]">
         <div className="flex items-center justify-between gap-[16px]">
           <div className="flex items-center gap-[12px]">
             <button
               type="button"
-              onClick={() => setIsOpen(true)}
-              className="w-[32px] h-[32px] flex items-center justify-center"
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="w-[32px] h-[32px] flex items-center justify-center min-[641px]:hidden"
               aria-label="Abrir menu"
             >
               <img

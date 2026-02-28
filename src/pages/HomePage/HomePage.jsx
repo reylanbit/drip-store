@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from "../../components/Button/Button";
 import Layout from "../../Layouts/Layout";
@@ -7,9 +7,32 @@ import CategoryGrid from "../../components/CategoryGrid/CategoryGrid";
 import SpecialOffer from "../../components/SpecialOffer/SpecialOffer";
 import ProductListing from "../../components/ProductListing/ProductListing";
 import Hero from "../../components/Hero/Hero";
-import { PRODUCTS, HOME_SLIDES, COLLECTIONS } from "../../data/db";
+import { HOME_SLIDES, COLLECTIONS } from "../../data/db";
+import { fetchProducts } from "../../services/api";
 
 const HomePage = () => {
+  const [topProducts, setTopProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProducts(8);
+        if (mounted) setTopProducts(data);
+      } catch {
+        if (mounted) setError("Não foi possível carregar os produtos em alta.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <Layout>
       <main className="flex flex-col gap-[48px] min-[1025px]:gap-[80px] bg-neutral-lightGray3 pb-[60px] min-[1025px]:pb-[80px]">
@@ -62,7 +85,12 @@ const HomePage = () => {
                   Ver todos <span>&rarr;</span>
                 </Link>
               </div>
-              <ProductListing products={PRODUCTS.slice(0, 8)} />
+              {error && <div className="text-error">{error}</div>}
+              {loading ? (
+                <div className="text-[#474747]">Carregando produtos...</div>
+              ) : (
+                <ProductListing products={topProducts} />
+              )}
             </Section>
           </div>
         </div>

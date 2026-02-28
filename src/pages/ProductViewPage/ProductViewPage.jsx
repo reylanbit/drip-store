@@ -6,21 +6,17 @@ import ProductDetails from '../../components/ProductDetails/ProductDetails';
 import ProductOptions from '../../components/ProductOptions/ProductOptions';
 import ProductListing from '../../components/ProductListing/ProductListing';
 import Button from '../../components/Button/Button';
-import { PRODUCTS } from '../../data/db';
 import { useCart } from '../../hooks/useCart';
+import { fetchProduct, fetchProducts } from '../../services/api';
 
 export default function ProductViewPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const product = PRODUCTS.find((item) => String(item.id) === String(id)) || PRODUCTS[0];
-  const images = [
-    { src: `/${product.image}` },
-    { src: `/${product.image}` },
-    { src: `/${product.image}` },
-    { src: `/${product.image}` }
-  ];
-  const related = PRODUCTS.filter((item) => item.id !== product.id).slice(0, 4);
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const sizes = ['39', '40', '41', '42', '43'];
   const colors = ['#62D2FF', '#FF5A7D', '#444444', '#6F73D2'];
   const sampleColors = ['#FFD6A5', '#C4F1BE', '#C0E5FF', '#E0C3FC', '#F9C6D4'];
@@ -33,15 +29,38 @@ export default function ProductViewPage() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const [prod, rel] = await Promise.all([
+          fetchProduct(id),
+          fetchProducts(4),
+        ]);
+        if (mounted) {
+          setProduct(prod);
+          setRelated(rel.filter((p) => String(p.id) !== String(id)));
+        }
+      } catch {
+        if (mounted) setError("Não foi possível carregar o produto.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   const onBuy = () => {
-    addToCart({
-      ...product,
-      selectedSize: currentSelection.size,
-      selectedColor: currentSelection.color,
-      selectedSampleColor: currentSelection.sampleColor
-    });
+    if (product) {
+      addToCart({
+        ...product,
+        selectedSize: currentSelection.size,
+        selectedColor: currentSelection.color,
+        selectedSampleColor: currentSelection.sampleColor
+      });
+    }
     navigate('/pedidos');
   };
 
@@ -56,8 +75,23 @@ export default function ProductViewPage() {
     <Layout>
       <main className="bg-neutral-lightGray3">
         <div className="max-w-[1440px] mx-auto px-[16px] min-[641px]:px-[24px] min-[1025px]:px-[100px] py-[32px] min-[1025px]:py-[40px]">
+          {error && <div className="text-error mb-[12px]">{error}</div>}
+          {loading || !product ? (
+            <div className="text-[#474747]">Carregando produto...</div>
+          ) : (
           <div className="flex flex-col min-[1025px]:flex-row gap-[24px] min-[1025px]:gap-[40px]">
-            <Gallery width="100%" height="min(70vw, 520px)" radius="8px" showThumbs images={images} />
+            <Gallery
+              width="100%"
+              height="min(70vw, 520px)"
+              radius="8px"
+              showThumbs
+              images={[
+                { src: product.image },
+                { src: product.image },
+                { src: product.image },
+                { src: product.image },
+              ]}
+            />
             <div className="flex-1 flex flex-col gap-[24px]">
               <ProductDetails
                 name={product.name}
@@ -97,6 +131,7 @@ export default function ProductViewPage() {
               </div>
             </div>
           </div>
+          )}
           <div className="mt-[60px]">
             <h2 className="text-[20px] min-[641px]:text-[24px] text-neutral-darkGray2 font-bold mb-[20px]">
               Produtos relacionados

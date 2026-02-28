@@ -1,9 +1,32 @@
+import { useEffect, useState } from "react";
 import Layout from "../../Layouts/Layout"; 
 import FilterGroup from "../../components/FilterGroup/FilterGroup";
 import ProductListing from "../../components/ProductListing/ProductListing";
-import { PRODUCTS } from "../../data/db";
+import { fetchProducts } from "../../services/api";
 
 const ProductListingPage = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProducts(15);
+        if (mounted) setProducts(data);
+      } catch {
+        if (mounted) setError("Não foi possível carregar os produtos.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <Layout>
       <div className="flex flex-col min-[1025px]:flex-row px-[16px] min-[641px]:px-[24px] min-[1025px]:px-[100px] py-[32px] min-[1025px]:py-[40px] bg-[#F5F5F5] gap-[24px]">
@@ -32,19 +55,24 @@ const ProductListingPage = () => {
         <section className="flex-1">
           <div className="flex flex-col min-[641px]:flex-row justify-between items-start min-[641px]:items-center mb-[24px] gap-[12px]">
             <h4 className="text-[#474747] text-[16px]">
-              Resultados para "Ténis" - {PRODUCTS.slice(0, 15).length} produtos
+              Resultados para "Ténis" - {products.length} produtos
             </h4>
             <div className="flex items-center gap-[10px] w-full min-[641px]:w-auto">
-              <label className="text-[16px] font-bold text-[#474747]">Ordenar por:</label>
-              <select className="w-full min-[641px]:w-auto h-[48px] border border-[#474747] rounded-[8px] px-[15px] text-[16px] text-[#474747] bg-transparent cursor-pointer">
-                <option value="relevantes">Mais relevantes</option>
-                <option value="menor">Menor preço</option>
-                <option value="maior">Maior preço</option>
-              </select>
+              <button className="h-[48px] px-[16px] border border-[#474747] rounded-[8px] text-[16px] bg-white">
+                Filtrar
+              </button>
+              <button className="h-[48px] px-[16px] border border-[#474747] rounded-[8px] text-[16px] bg-white">
+                Ordenar
+              </button>
             </div>
           </div>
           <div className="grid gap-[20px]">
-            <ProductListing products={PRODUCTS.slice(0, 15)} />
+            {error && <div className="text-error">{error}</div>}
+            {loading ? (
+              <div className="text-[#474747]">Carregando produtos...</div>
+            ) : (
+              <ProductListing products={products} />
+            )}
           </div>
         </section>
       </div>
